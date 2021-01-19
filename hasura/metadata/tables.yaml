@@ -1,0 +1,200 @@
+- table:
+    schema: public
+    name: category
+  array_relationships:
+  - name: products
+    using:
+      foreign_key_constraint_on:
+        column: category_id
+        table:
+          schema: public
+          name: products
+- table:
+    schema: public
+    name: dispatch
+  event_triggers:
+  - name: create_dispatch
+    definition:
+      enable_manual: false
+      insert:
+        columns: '*'
+    retry_conf:
+      num_retries: 50
+      interval_sec: 45
+      timeout_sec: 60
+    webhook_from_env: EVENT_CREATE_DISPATCH
+  - name: update_dispatch
+    definition:
+      enable_manual: false
+      update:
+        columns:
+        - rate_gh
+        - rate_ke
+        - rate_ng
+        - rate_uk
+        - id
+        - account_id
+        - account_number
+        - bank_code
+        - contact
+        - country
+        - email
+        - name
+        - subaccount_id
+        - created_at
+        - updated_at
+    retry_conf:
+      num_retries: 50
+      interval_sec: 45
+      timeout_sec: 60
+    webhook_from_env: EVENT_UPDATE_DISPATCH
+- table:
+    schema: public
+    name: order_items
+  object_relationships:
+  - name: order
+    using:
+      foreign_key_constraint_on: order_id
+  - name: product
+    using:
+      foreign_key_constraint_on: product_id
+- table:
+    schema: public
+    name: orders
+  array_relationships:
+  - name: items
+    using:
+      foreign_key_constraint_on:
+        column: order_id
+        table:
+          schema: public
+          name: order_items
+- table:
+    schema: public
+    name: payments
+- table:
+    schema: public
+    name: product_prices
+- table:
+    schema: public
+    name: products
+  object_relationships:
+  - name: category
+    using:
+      foreign_key_constraint_on: category_id
+  - name: shop
+    using:
+      foreign_key_constraint_on: shop_id
+  array_relationships:
+  - name: prices
+    using:
+      foreign_key_constraint_on:
+        column: product_id
+        table:
+          schema: public
+          name: product_prices
+- table:
+    schema: public
+    name: shops
+  object_relationships:
+  - name: dispatch
+    using:
+      foreign_key_constraint_on: dispatch_id
+  - name: payment
+    using:
+      foreign_key_constraint_on: payment_id
+  - name: user
+    using:
+      foreign_key_constraint_on: admin_id
+  array_relationships:
+  - name: products
+    using:
+      foreign_key_constraint_on:
+        column: shop_id
+        table:
+          schema: public
+          name: products
+  insert_permissions:
+  - role: merchant
+    permission:
+      check:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      columns:
+      - approved
+      - admin_id
+      - id
+      - name
+      - created_at
+      - updated_at
+      backend_only: false
+  select_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - approved
+      - admin_id
+      - id
+      - name
+      - created_at
+      - updated_at
+      filter:
+        _and:
+        - user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+        - user:
+            role:
+              _eq: merchant
+      allow_aggregations: true
+  update_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - id
+      - admin_id
+      - created_at
+      - updated_at
+      - approved
+      - name
+      filter:
+        _and:
+        - user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+        - user:
+            role:
+              _eq: merchant
+      check: null
+  event_triggers:
+  - name: update_shops
+    definition:
+      enable_manual: false
+      update:
+        columns:
+        - approved
+        - admin_id
+        - dispatch_id
+        - id
+        - payment_id
+        - account_id
+        - account_number
+        - bank_code
+        - country
+        - description
+        - email
+        - location
+        - name
+        - phone
+        - subaccount_id
+        - created_at
+        - updated_at
+    retry_conf:
+      num_retries: 50
+      interval_sec: 45
+      timeout_sec: 60
+    webhook_from_env: EVENT_UPDATE_SHOPS
+- table:
+    schema: public
+    name: users

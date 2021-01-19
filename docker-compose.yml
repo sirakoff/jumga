@@ -1,0 +1,32 @@
+version: '3.6'
+services:
+  postgres:
+    image: postgres:12
+    restart: always
+    volumes:
+    - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+  graphql-engine:
+    image: hasura/graphql-engine:v1.3.3
+    ports:
+    - "8085:8080"
+    depends_on:
+    - "postgres"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@postgres:5432/postgres
+      # HASURA_GRAPHQL_JWT_SECRET: "{\"type\":\"RS256\",\"jwk_url\": \"https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com\",\"audience\": \"jumga-b4e5\",\"issuer\": \"https://securetoken.google.com/jumga-b4e5\"}"
+      ## enable the console served by server
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "false" # set to "false" to disable console
+      EVENT_UPDATE_DISPATCH: "http://host.docker.internal:3000/api/events/dispatch/update"
+      EVENT_CREATE_DISPATCH: "http://host.docker.internal:3000/api/events/dispatch/create"
+      EVENT_UPDATE_SHOPS: "http://host.docker.internal:3000/api/events/shops"
+      ## enable debugging mode. It is recommended to disable this in production
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      ## uncomment next line to set an admin secret
+      # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
+volumes:
+  db_data:
+

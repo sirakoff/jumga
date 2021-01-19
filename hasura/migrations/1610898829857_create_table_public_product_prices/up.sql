@@ -1,0 +1,1 @@
+CREATE TABLE "public"."product_prices"("id" bigserial NOT NULL, "currency" text NOT NULL, "price" float8 NOT NULL, "default" boolean NOT NULL, "product_id" int8 NOT NULL, PRIMARY KEY ("id") , FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON UPDATE no action ON DELETE no action);
