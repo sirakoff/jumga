@@ -1,4 +1,2 @@
-INSERT INTO users (name, role) VALUES
-  ('Rider 1', 'dispatch'),
-  ('Rider 2', 'dispatch'),
-  ('Rider 3', 'dispatch');
+INSERT INTO dispatch (name, country, bank_code, account_number, rate_gh, rate_uk, rate_ng, rate_ke, contact, email) VALUES
+  ('Rider 1', 'GH', 'MTN', '0244000000', '100', '20', '3000', '100', '0244000000', 'rider1@jumga.com');
