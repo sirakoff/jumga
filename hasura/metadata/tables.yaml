@@ -9,9 +9,101 @@
         table:
           schema: public
           name: products
+  select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - name
+      - slug
+      filter: {}
+      allow_aggregations: true
+  - role: merchant
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - name
+      - slug
+      filter: {}
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+      - id
+      - name
+      - slug
+      - created_at
+      - updated_at
+      filter: {}
+      allow_aggregations: true
 - table:
     schema: public
     name: dispatch
+  select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - account_id
+      - subaccount_id
+      - name
+      - country
+      - bank_code
+      - account_number
+      - rate_gh
+      - rate_uk
+      - rate_ng
+      - rate_ke
+      - contact
+      - email
+      filter: {}
+      allow_aggregations: true
+  - role: merchant
+    permission:
+      columns:
+      - rate_gh
+      - rate_ke
+      - rate_ng
+      - rate_uk
+      - id
+      - account_id
+      - account_number
+      - bank_code
+      - contact
+      - country
+      - email
+      - name
+      - subaccount_id
+      - created_at
+      - updated_at
+      filter: {}
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - account_id
+      - subaccount_id
+      - name
+      - country
+      - bank_code
+      - account_number
+      - rate_gh
+      - rate_uk
+      - rate_ng
+      - rate_ke
+      - contact
+      - email
+      filter: {}
+      allow_aggregations: true
   event_triggers:
   - name: create_dispatch
     definition:
@@ -58,9 +150,118 @@
   - name: product
     using:
       foreign_key_constraint_on: product_id
+  insert_permissions:
+  - role: merchant
+    permission:
+      check:
+        order:
+          user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+      columns:
+      - id
+      - product_id
+      - order_id
+      - created_at
+      - updated_at
+      - price
+      - qty
+      - total
+      backend_only: false
+  - role: user
+    permission:
+      check:
+        order:
+          user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+      columns:
+      - price
+      - total
+      - id
+      - qty
+      - order_id
+      - product_id
+      - created_at
+      - updated_at
+      backend_only: false
+  select_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - price
+      - total
+      - id
+      - qty
+      - order_id
+      - product_id
+      - created_at
+      - updated_at
+      filter:
+        order:
+          user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+      - price
+      - total
+      - id
+      - qty
+      - order_id
+      - product_id
+      - created_at
+      - updated_at
+      filter:
+        order:
+          user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  update_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - price
+      - total
+      - id
+      - qty
+      - order_id
+      - product_id
+      - created_at
+      - updated_at
+      filter:
+        order:
+          user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+      check: null
+  - role: user
+    permission:
+      columns:
+      - price
+      - total
+      - id
+      - qty
+      - order_id
+      - product_id
+      - created_at
+      - updated_at
+      filter:
+        order:
+          user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+      check: null
 - table:
     schema: public
     name: orders
+  object_relationships:
+  - name: user
+    using:
+      foreign_key_constraint_on: user_id
   array_relationships:
   - name: items
     using:
@@ -69,12 +270,206 @@
         table:
           schema: public
           name: order_items
+  insert_permissions:
+  - role: merchant
+    permission:
+      check:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - user_id
+      - total
+      - country
+      - currency
+      - total_qty
+      - total_delivery
+      - subtotal
+      - customer_name
+      - customer_phone
+      - payment_id
+      backend_only: false
+  - role: user
+    permission:
+      check:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      columns:
+      - subtotal
+      - total
+      - total_delivery
+      - total_qty
+      - id
+      - payment_id
+      - user_id
+      - country
+      - currency
+      - customer_name
+      - customer_phone
+      - created_at
+      - updated_at
+      backend_only: false
+  select_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - subtotal
+      - total
+      - total_delivery
+      - total_qty
+      - id
+      - payment_id
+      - user_id
+      - country
+      - currency
+      - customer_name
+      - customer_phone
+      - created_at
+      - updated_at
+      filter:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+      - subtotal
+      - total
+      - total_delivery
+      - total_qty
+      - id
+      - payment_id
+      - user_id
+      - country
+      - currency
+      - customer_name
+      - customer_phone
+      - created_at
+      - updated_at
+      filter:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  update_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - subtotal
+      - total
+      - total_delivery
+      - total_qty
+      - id
+      - payment_id
+      - user_id
+      - country
+      - currency
+      - customer_name
+      - customer_phone
+      - created_at
+      - updated_at
+      filter:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      check: null
+  - role: user
+    permission:
+      columns:
+      - subtotal
+      - total
+      - total_delivery
+      - total_qty
+      - id
+      - payment_id
+      - user_id
+      - country
+      - currency
+      - customer_name
+      - customer_phone
+      - created_at
+      - updated_at
+      filter:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      check: null
 - table:
     schema: public
     name: payments
 - table:
     schema: public
     name: product_prices
+  object_relationships:
+  - name: product
+    using:
+      foreign_key_constraint_on: product_id
+  insert_permissions:
+  - role: merchant
+    permission:
+      check:
+        product:
+          user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+      columns:
+      - id
+      - currency
+      - price
+      - default
+      - product_id
+      backend_only: false
+  select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+      - id
+      - currency
+      - price
+      - default
+      - product_id
+      filter: {}
+      allow_aggregations: true
+  - role: merchant
+    permission:
+      columns:
+      - id
+      - currency
+      - price
+      - default
+      - product_id
+      filter: {}
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+      - default
+      - price
+      - id
+      - product_id
+      - currency
+      filter: {}
+      allow_aggregations: true
+  update_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - default
+      - price
+      - id
+      - product_id
+      - currency
+      filter:
+        product:
+          user:
+            firebase_id:
+              _eq: X-Hasura-User-Id
+      check: null
 - table:
     schema: public
     name: products
@@ -85,6 +480,9 @@
   - name: shop
     using:
       foreign_key_constraint_on: shop_id
+  - name: user
+    using:
+      foreign_key_constraint_on: created_by
   array_relationships:
   - name: prices
     using:
@@ -93,6 +491,97 @@
         table:
           schema: public
           name: product_prices
+  insert_permissions:
+  - role: merchant
+    permission:
+      check:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      columns:
+      - public
+      - qty
+      - category_id
+      - created_by
+      - id
+      - shop_id
+      - description
+      - image
+      - name
+      - created_at
+      - updated_at
+      backend_only: false
+  select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - name
+      - description
+      - shop_id
+      - created_by
+      - category_id
+      - public
+      - qty
+      - image
+      filter: {}
+      allow_aggregations: true
+  - role: merchant
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - name
+      - description
+      - shop_id
+      - created_by
+      - category_id
+      - public
+      - qty
+      - image
+      filter: {}
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+      - public
+      - qty
+      - category_id
+      - created_by
+      - id
+      - shop_id
+      - description
+      - image
+      - name
+      - created_at
+      - updated_at
+      filter:
+        public:
+          _eq: true
+      allow_aggregations: true
+  update_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - public
+      - qty
+      - category_id
+      - created_by
+      - id
+      - shop_id
+      - description
+      - image
+      - name
+      - created_at
+      - updated_at
+      filter:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      check: null
 - table:
     schema: public
     name: shops
@@ -122,31 +611,122 @@
           firebase_id:
             _eq: X-Hasura-User-Id
       columns:
+      - id
+      - admin_id
+      - created_at
+      - updated_at
+      - approved
+      - name
+      - description
+      - location
+      - dispatch_id
+      - payment_id
+      - country
+      - subaccount_id
+      - bank_code
+      - account_number
+      - phone
+      - email
+      - account_id
+      - logo
+      backend_only: false
+  - role: user
+    permission:
+      check:
+        user:
+          firebase_id:
+            _eq: X-Hasura-User-Id
+      columns:
       - approved
       - admin_id
+      - dispatch_id
       - id
+      - payment_id
+      - account_id
+      - account_number
+      - bank_code
+      - country
+      - description
+      - email
+      - location
+      - logo
       - name
+      - phone
+      - subaccount_id
       - created_at
       - updated_at
       backend_only: false
   select_permissions:
+  - role: anonymous
+    permission:
+      columns:
+      - account_id
+      - account_number
+      - admin_id
+      - approved
+      - bank_code
+      - country
+      - created_at
+      - description
+      - dispatch_id
+      - email
+      - id
+      - location
+      - logo
+      - name
+      - payment_id
+      - phone
+      - subaccount_id
+      - updated_at
+      filter: {}
+      allow_aggregations: true
   - role: merchant
     permission:
       columns:
       - approved
       - admin_id
+      - dispatch_id
       - id
+      - payment_id
+      - account_id
+      - account_number
+      - bank_code
+      - country
+      - description
+      - email
+      - location
+      - logo
       - name
+      - phone
+      - subaccount_id
       - created_at
       - updated_at
+      filter: {}
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+      - id
+      - admin_id
+      - created_at
+      - updated_at
+      - approved
+      - name
+      - description
+      - location
+      - dispatch_id
+      - payment_id
+      - country
+      - subaccount_id
+      - bank_code
+      - account_number
+      - phone
+      - email
+      - account_id
+      - logo
       filter:
-        _and:
-        - user:
-            firebase_id:
-              _eq: X-Hasura-User-Id
-        - user:
-            role:
-              _eq: merchant
+        approved:
+          _eq: true
       allow_aggregations: true
   update_permissions:
   - role: merchant
@@ -158,6 +738,18 @@
       - updated_at
       - approved
       - name
+      - description
+      - location
+      - dispatch_id
+      - payment_id
+      - country
+      - subaccount_id
+      - bank_code
+      - account_number
+      - phone
+      - email
+      - account_id
+      - logo
       filter:
         _and:
         - user:
@@ -198,3 +790,75 @@
 - table:
     schema: public
     name: users
+  insert_permissions:
+  - role: user
+    permission:
+      check:
+        firebase_id:
+          _eq: X-Hasura-User-Id
+      columns:
+      - id
+      - firebase_id
+      - name
+      - role
+      - created_at
+      - updated_at
+      backend_only: false
+  select_permissions:
+  - role: merchant
+    permission:
+      columns:
+      - id
+      - created_at
+      - updated_at
+      - name
+      - role
+      - firebase_id
+      filter:
+        firebase_id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  - role: user
+    permission:
+      columns:
+      - id
+      - firebase_id
+      - name
+      - role
+      - created_at
+      - updated_at
+      filter:
+        firebase_id:
+          _eq: X-Hasura-User-Id
+      allow_aggregations: true
+  update_permissions:
+  - role: user
+    permission:
+      columns:
+      - id
+      - firebase_id
+      - name
+      - role
+      - created_at
+      - updated_at
+      filter:
+        firebase_id:
+          _eq: X-Hasura-User-Id
+      check: null
+  event_triggers:
+  - name: update_users
+    definition:
+      enable_manual: false
+      update:
+        columns:
+        - id
+        - firebase_id
+        - name
+        - role
+        - created_at
+        - updated_at
+    retry_conf:
+      num_retries: 50
+      interval_sec: 45
+      timeout_sec: 60
+    webhook_from_env: EVENT_UPDATE_USER

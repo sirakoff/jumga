@@ -1,2 +1,19 @@
+type Mutation {
+  register (
+    info: RegisterInput!
+  ): RegisterOutput
+}
 
+
+
+
+input RegisterInput {
+  email : String!
+  name : String!
+  password : String!
+}
+
+type RegisterOutput {
+  id : Int!
+}
 

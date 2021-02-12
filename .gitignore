@@ -1,0 +1,38 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/jumga/node_modules
+/functions/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/jumga/coverage
+
+# next.js
+/jumga/.next/
+/jumga/out/
+
+# production
+/jumga/build
+
+# misc
+/jumga/.DS_Store
+/jumga/*.pem
+
+# debug
+/jumga/npm-debug.log*
+/jumga/yarn-debug.log*
+/jumga/yarn-error.log*
+
+# local env files
+/jumga/.env.local
+/jumga/.env.development.local
+/jumga/.env.test.local
+/jumga/.env.production.local
+/jumga/.env.production
+
+# vercel
+/jumga/.vercel
+
+/jumga/secret.json

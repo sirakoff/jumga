@@ -1,6 +1,14 @@
-actions: []
+actions:
+- name: register
+  definition:
+    kind: synchronous
+    handler: '{{ACTION_CREATE_USER}}'
+  permissions:
+  - role: anonymous
 custom_types:
   enums: []
-  input_objects: []
-  objects: []
+  input_objects:
+  - name: RegisterInput
+  objects:
+  - name: RegisterOutput
   scalars: []
